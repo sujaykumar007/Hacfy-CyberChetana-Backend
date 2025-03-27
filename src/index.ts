@@ -12,7 +12,7 @@ const app = express();
 const prisma = new PrismaClient();
 
 
-app.use(cors({ origin: "https://cyberchetana.hacfy.com" }));
+app.use(cors({ origin: "*" }));
 
    
 
