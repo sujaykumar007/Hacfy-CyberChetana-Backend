@@ -12,13 +12,10 @@ const app = express();
 const prisma = new PrismaClient();
 
 
-app.use(
-  cors({
-    origin: "http://localhost:3000", 
-    methods: "GET,POST",
-    credentials: true,
-  })
-);
+app.use(cors({ origin: "https://cyberchetana.hacfy.com" }));
+
+   
+
 app.use(express.json());
 app.use(bodyParser.json());
 
