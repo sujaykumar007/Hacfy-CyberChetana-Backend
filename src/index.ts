@@ -135,7 +135,7 @@ const generatePDF = async (htmlContent: string): Promise<Buffer> => {
   });
 
   const page = await browser.newPage();
-  await page.setContent(htmlContent);
+  await page.setContent(htmlContent)
 
   // Generate PDF in memory and force-cast to Buffer
   const pdfBuffer = (await page.pdf({ format: "A4" })) as Buffer;
