@@ -11,10 +11,10 @@ dotenv.config();
 const app = express();
 const prisma = new PrismaClient();
 
-// Middleware
+
 app.use(
   cors({
-    origin: "http://localhost:3000", // Change in production
+    origin: "http://localhost:3000", 
     methods: "GET,POST",
     credentials: true,
   })
