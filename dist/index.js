@@ -139,7 +139,7 @@ const generatePDF = (htmlContent) => __awaiter(void 0, void 0, void 0, function*
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const page = yield browser.newPage();
-    yield page.setContent(htmlContent);
+    yield page.setContent(htmlContent)
     // Generate PDF in memory and force-cast to Buffer
     const pdfBuffer = (yield page.pdf({ format: "A4" }));
     yield browser.close();
