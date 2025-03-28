@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc && prisma generate",
     "start": "npm run build && node dist/index.js",
-    "dev": "prisma generate && nodemon src/index.ts"
+    "dev": "prisma generate && nodemon src/index.ts",
+     "postinstall": "npx puppeteer browsers install chrome"
   },
   "keywords": [],
   "author": "",
