@@ -12,7 +12,7 @@ const app = express();
 const prisma = new PrismaClient();
 
 // Middleware
-app.use(cors({ origin: "https://cyberchetana.hacfy.com/" }));
+app.use(cors({ origin: "https://cyberchetana.hacfy.com/" }))
 app.use(express.json());
 app.use(bodyParser.json());
 
