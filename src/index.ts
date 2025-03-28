@@ -72,37 +72,47 @@ const generateCertificateHTML = (firstName: string, lastName: string) => `
 </body>
 </html>
 `;
-
-
-const generatePDF = async (htmlContent: string): Promise<Buffer> => {
+export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
   try {
-    console.log("📄 Generating PDF...");
+    console.log("🟡 Starting Puppeteer...");
 
     const browser = await puppeteer.launch({
-      headless: true, // ✅ Use `true` instead of `"new"`
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || "/usr/bin/google-chrome-stable",
+      headless: true,
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--disable-software-rasterizer"
+      ]
     });
+
+    console.log("✅ Puppeteer launched successfully");
     
-
-    console.log("✅ Puppeteer Launched");
-
     const page = await browser.newPage();
-    console.log("✅ New Page Created");
+    console.log("✅ New page created");
 
-    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
-    console.log("✅ HTML Loaded into Puppeteer");
+    await page.setContent(htmlContent);
+    console.log("✅ HTML content set");
 
-    const pdfUint8Array = await page.pdf({ format: "A4" });
-    console.log("✅ PDF Successfully Generated");
+    const pdfBuffer = await page.pdf({ format: "A4" });
+    console.log("✅ PDF generated successfully");
 
     await browser.close();
 
-    // ✅ Convert Uint8Array to Buffer
-    return Buffer.from(pdfUint8Array.buffer);
-  } catch (error: any) {
-    console.error("❌ Puppeteer PDF Generation Error:", error.message);
-    throw new Error(`PDF generation failed: ${error.message}`);
-  }
+    return Buffer.from(pdfBuffer); // ✅ Convert Uint8Array to Buffer
+
+  } catch (error: unknown) {
+    console.error("❌ PDF generation failed:", error);
+    
+    if (error instanceof Error) {
+        throw new Error("PDF generation failed: " + error.message);
+    } else {
+        throw new Error("PDF generation failed: Unknown error occurred");
+    }
+}
+
 };
 
 

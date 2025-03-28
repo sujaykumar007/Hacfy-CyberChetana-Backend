@@ -2,12 +2,14 @@
   "name": "pdf-certificate-project",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "build": "tsc && prisma generate",
-    "start": "npm run build && node dist/index.js",
-    "dev": "prisma generate && nodemon src/index.ts",
-     "postinstall": "npx puppeteer browsers install chrome"
-  },
+ "scripts": {
+  "postinstall": "npx puppeteer browsers install chrome",
+  "build": "tsc && prisma generate",
+  "start": "npm run build && node dist/index.js",
+  "dev": "prisma generate && nodemon src/index.ts"
+}
+,
+
   "keywords": [],
   "author": "",
   "license": "ISC",
