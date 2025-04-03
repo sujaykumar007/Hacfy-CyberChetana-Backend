@@ -1,12 +1,13 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
-import puppeteer from "puppeteer";
+
 import nodemailer from "nodemailer";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { Buffer } from "buffer";
-
+import puppeteer from "puppeteer-core";
+import chromium from "chrome-aws-lambda"
 dotenv.config();
 
 const app = express();
@@ -82,11 +83,14 @@ export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
   try {
     console.log("🟡 Starting Puppeteer...");
 
+    const executablePath = await chromium.executablePath; // ✅ Fetch correct Chromium path
+
     const browser = await puppeteer.launch({
-      executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", // Use your path
-      headless: false, // Run in non-headless mode to debug
+      executablePath: executablePath || "/usr/bin/google-chrome-stable", // ✅ Fallback for Render
+      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"], // ✅ Required headless arguments
+      headless: true, // ✅ Ensure headless mode is enabled
+      defaultViewport: chromium.defaultViewport,
     });
-  
 
     console.log("✅ Puppeteer launched successfully");
 
@@ -94,7 +98,7 @@ export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
     await page.setContent(htmlContent);
     console.log("✅ HTML content set");
 
-    const pdfBuffer = await page.pdf({ format: "A4" });
+    const pdfBuffer = await page.pdf({ format: "a4" });
     console.log("✅ PDF generated successfully");
 
     await browser.close();
