@@ -84,15 +84,29 @@ export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
   try {
     console.log("🟡 Starting Puppeteer...");
 
-    const browser = await puppeteer.launch({
-      executablePath:
-        process.env.RENDER
-          ? "/usr/bin/chromium"
-          : "C:\\Users\\info\\.cache\\puppeteer\\chrome\\win64-134.0.6998.165\\chrome-win64\\chrome.exe",
-      headless: true, // Use "new" for latest versions
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
-    });
+    // const browser = await puppeteer.launch({
+    //   executablePath:
+    //     process.env.RENDER
+    //       ? "/usr/bin/chromium"
+    //       : "C:\\Users\\info\\.cache\\puppeteer\\chrome\\win64-134.0.6998.165\\chrome-win64\\chrome.exe",
+    //   headless: false, // Use "new" for latest versions
+    //   args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
+    // });
 
+    const browser = await puppeteer.launch({
+      headless: true,
+      executablePath: process.env.CHROME_BIN || "/usr/bin/chromium",
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--no-first-run",
+        "--no-zygote",
+        "--single-process",
+        "--disable-gpu"
+      ]
+    });
     console.log("✅ Puppeteer launched successfully");
 
     const page = await browser.newPage();

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "postinstall": "npx puppeteer browsers install chrome",
+   "postinstall": "apt-get update && apt-get install -y chromium",
     "build": "tsc && prisma generate",
     "start": "npm run build && node dist/index.js",
     "dev": "prisma generate && nodemon src/index.ts"
