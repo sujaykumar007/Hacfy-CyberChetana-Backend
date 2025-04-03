@@ -79,17 +79,26 @@ const generateCertificateHTML = (firstName: string, lastName: string) => `
 </html>
 `;
 
+
+
+
+
 export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
   try {
     console.log("🟡 Starting Puppeteer...");
 
-    const executablePath = await chromium.executablePath; // ✅ Fetch correct Chromium path
-
     const browser = await puppeteer.launch({
-      executablePath: executablePath || "/usr/bin/google-chrome-stable", // ✅ Fallback for Render
-      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox"], // ✅ Required headless arguments
-      headless: true, // ✅ Ensure headless mode is enabled
-      defaultViewport: chromium.defaultViewport,
+      executablePath: process.env.CHROME_EXECUTABLE_PATH || 
+        (await chromium.executablePath) || 
+        "/usr/bin/chromium",
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-gpu",
+        "--single-process",
+      ],
+      headless: true,  // ✅ Ensures headless mode is compatible
     });
 
     console.log("✅ Puppeteer launched successfully");
@@ -102,7 +111,6 @@ export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
     console.log("✅ PDF generated successfully");
 
     await browser.close();
-
     return Buffer.from(pdfBuffer);
   } catch (error: any) {
     console.error("❌ PDF generation failed:", error);
@@ -110,7 +118,6 @@ export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
   }
 };
 
-// ✅ Registration Endpoint
 app.post("/register", async (req :any, res :any) => {
   try {
     console.log("📩 Received Registration Request:", req.body);

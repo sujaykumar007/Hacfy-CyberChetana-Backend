@@ -16,11 +16,12 @@ exports.generatePDF = void 0;
 const express_1 = __importDefault(require("express"));
 const client_1 = require("@prisma/client");
 const dotenv_1 = __importDefault(require("dotenv"));
-const puppeteer_1 = __importDefault(require("puppeteer"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const buffer_1 = require("buffer");
+const puppeteer_core_1 = __importDefault(require("puppeteer-core"));
+const chrome_aws_lambda_1 = __importDefault(require("chrome-aws-lambda"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
@@ -91,15 +92,22 @@ const generateCertificateHTML = (firstName, lastName) => `
 const generatePDF = (htmlContent) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("🟡 Starting Puppeteer...");
-        const browser = yield puppeteer_1.default.launch({
-            executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", // Use your path
-            headless: false, // Run in non-headless mode to debug
+        const browser = yield puppeteer_core_1.default.launch({
+            executablePath: process.env.CHROME_EXECUTABLE_PATH || (yield chrome_aws_lambda_1.default.executablePath),
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--single-process",
+                "--disable-dev-shm-usage",
+                "--disable-gpu"
+            ],
+            headless: true,
         });
         console.log("✅ Puppeteer launched successfully");
         const page = yield browser.newPage();
         yield page.setContent(htmlContent);
         console.log("✅ HTML content set");
-        const pdfBuffer = yield page.pdf({ format: "A4" });
+        const pdfBuffer = yield page.pdf({ format: "a4" });
         console.log("✅ PDF generated successfully");
         yield browser.close();
         return buffer_1.Buffer.from(pdfBuffer);
@@ -110,7 +118,6 @@ const generatePDF = (htmlContent) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.generatePDF = generatePDF;
-// ✅ Registration Endpoint
 app.post("/register", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log("📩 Received Registration Request:", req.body);
