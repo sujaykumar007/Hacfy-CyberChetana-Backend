@@ -17,11 +17,7 @@ dotenv.config();
 const app = express();
 const prisma = new PrismaClient();
 
-app.use(cors({
-  origin: "https://cyberchetana.hacfy.com",  
-  methods: "GET,POST",
-  allowedHeaders: "Content-Type",
-}));
+app.use(cors());
 
 app.use(express.json());
 app.use(bodyParser.json());

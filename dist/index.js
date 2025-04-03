@@ -16,20 +16,15 @@ exports.generatePDF = void 0;
 const express_1 = __importDefault(require("express"));
 const client_1 = require("@prisma/client");
 const dotenv_1 = __importDefault(require("dotenv"));
+const puppeteer_core_1 = __importDefault(require("puppeteer-core"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const buffer_1 = require("buffer");
-const puppeteer_core_1 = __importDefault(require("puppeteer-core"));
-const chrome_aws_lambda_1 = __importDefault(require("chrome-aws-lambda"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
-app.use((0, cors_1.default)({
-    origin: "https://cyberchetana.hacfy.com", // ✅ Allow only your frontend
-    methods: "GET,POST",
-    allowedHeaders: "Content-Type",
-}));
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(body_parser_1.default.json());
 // ✅ Test Database Connection
@@ -93,22 +88,16 @@ const generatePDF = (htmlContent) => __awaiter(void 0, void 0, void 0, function*
     try {
         console.log("🟡 Starting Puppeteer...");
         const browser = yield puppeteer_core_1.default.launch({
-            executablePath: process.env.CHROME_EXECUTABLE_PATH || (yield chrome_aws_lambda_1.default.executablePath),
-            args: [
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--single-process",
-                "--disable-dev-shm-usage",
-                "--disable-gpu"
-            ],
-            headless: true,
+            executablePath: process.env.RENDER
+                ? "/usr/bin/chromium"
+                : "C:\\Users\\info\\.cache\\puppeteer\\chrome\\win64-134.0.6998.165\\chrome-win64\\chrome.exe",
+            headless: true, // Use "new" for latest versions
+            args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
         });
         console.log("✅ Puppeteer launched successfully");
         const page = yield browser.newPage();
-        yield page.setContent(htmlContent);
-        console.log("✅ HTML content set");
+        yield page.setContent(htmlContent, { waitUntil: "networkidle0" });
         const pdfBuffer = yield page.pdf({ format: "a4" });
-        console.log("✅ PDF generated successfully");
         yield browser.close();
         return buffer_1.Buffer.from(pdfBuffer);
     }
