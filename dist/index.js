@@ -91,7 +91,7 @@ const generatePDF = (htmlContent) => __awaiter(void 0, void 0, void 0, function*
             executablePath: process.env.RENDER
                 ? "/usr/bin/chromium"
                 : "C:\\Users\\info\\.cache\\puppeteer\\chrome\\win64-134.0.6998.165\\chrome-win64\\chrome.exe",
-            headless: true, // Use "new" for latest versions
+            headless: false, // Use "new" for latest versions
             args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
         });
         console.log("✅ Puppeteer launched successfully");

@@ -80,55 +80,17 @@ const generateCertificateHTML = (firstName: string, lastName: string) => `
 `;
 
 
-// export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
-//   try {
-//     console.log("🟡 Starting Puppeteer...");
-
-//     const browser = await puppeteer.launch({
-//       executablePath:
-//         process.env.RENDER
-//           ? "/usr/bin/chromium"
-//           : "C:\\Users\\info\\.cache\\puppeteer\\chrome\\win64-134.0.6998.165\\chrome-win64\\chrome.exe",
-//       headless: false, // Use "new" for latest versions
-//       args:
-//      ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
-//     });
-
-
- 
-//     console.log("✅ Puppeteer launched successfully");
-
-//     const page = await browser.newPage();
-//     await page.setContent(htmlContent, { waitUntil: "networkidle0" });
-
-//     const pdfBuffer = await page.pdf({ format: "a4" });
-
-//     await browser.close();
-//     return Buffer.from(pdfBuffer);
-//   } catch (error: any) {
-//     console.error("❌ PDF generation failed:", error);
-//     throw new Error("PDF generation failed: " + error.message);
-//   }
-// };
 export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
   try {
     console.log("🟡 Starting Puppeteer...");
 
     const browser = await puppeteer.launch({
-      executablePath: process.env.RENDER
-        ? "/usr/bin/chromium"
-        : "C:\\Users\\info\\.cache\\puppeteer\\chrome\\win64-134.0.6998.165\\chrome-win64\\chrome.exe",
-      headless: true, // Use "new" for latest Puppeteer versions
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-gpu",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--no-first-run",
-        "--no-zygote",
-        "--single-process"
-      ],
+      executablePath:
+        process.env.RENDER
+          ? "/usr/bin/chromium"
+          : "C:\\Users\\info\\.cache\\puppeteer\\chrome\\win64-134.0.6998.165\\chrome-win64\\chrome.exe",
+      headless: false, // Use "new" for latest versions
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
     });
 
     console.log("✅ Puppeteer launched successfully");
