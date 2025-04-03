@@ -1,20 +1,24 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
+import puppeteer from "puppeteer-core";
+import fs from "fs";
+import path from "path";
 
 import nodemailer from "nodemailer";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { Buffer } from "buffer";
-import puppeteer from "puppeteer-core";
+
 import chromium from "chrome-aws-lambda"
+import findChrome from "chrome-finder";
 dotenv.config();
 
 const app = express();
 const prisma = new PrismaClient();
 
 app.use(cors({
-  origin: "https://cyberchetana.hacfy.com",  // ✅ Allow only your frontend
+  origin: "https://cyberchetana.hacfy.com",  
   methods: "GET,POST",
   allowedHeaders: "Content-Type",
 }));
@@ -80,35 +84,25 @@ const generateCertificateHTML = (firstName: string, lastName: string) => `
 `;
 
 
-
-
-
 export const generatePDF = async (htmlContent: string): Promise<Buffer> => {
   try {
     console.log("🟡 Starting Puppeteer...");
 
     const browser = await puppeteer.launch({
-      executablePath: process.env.CHROME_EXECUTABLE_PATH || 
-        (await chromium.executablePath) || 
-        "/usr/bin/chromium",
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-gpu",
-        "--single-process",
-      ],
-      headless: true,  // ✅ Ensures headless mode is compatible
+      executablePath:
+        process.env.RENDER
+          ? "/usr/bin/chromium"
+          : "C:\\Users\\info\\.cache\\puppeteer\\chrome\\win64-134.0.6998.165\\chrome-win64\\chrome.exe",
+      headless: true, // Use "new" for latest versions
+      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu"],
     });
 
     console.log("✅ Puppeteer launched successfully");
 
     const page = await browser.newPage();
-    await page.setContent(htmlContent);
-    console.log("✅ HTML content set");
+    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
     const pdfBuffer = await page.pdf({ format: "a4" });
-    console.log("✅ PDF generated successfully");
 
     await browser.close();
     return Buffer.from(pdfBuffer);
